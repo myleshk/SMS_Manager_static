@@ -12,7 +12,7 @@ if (isset($_POST['data'])) {
 
     send_response(['success' => true]);
 } else {
-    send_response(['success' => false, 'error' => 'no data']);
+    send_response(['success' => false, 'error' => 'no data', 'post' => $_POST, 'get' => $_GET]);
 }
 
 
