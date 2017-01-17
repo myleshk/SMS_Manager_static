@@ -87,7 +87,15 @@ class Manager
         $uuid = @$data['uuid'];
         $timestamp = @$data['timestamp'];
 
-        if ($sender && $body && $slot && $uuid && $timestamp) {
+        // check missing
+        $missing = [];
+        if ($sender !== '0' && empty($sender)) $missing[] = "sender";
+        if ($body !== '0' && empty($body)) $missing[] = "body";
+        if ($slot !== '0' && empty($slot)) $missing[] = "slot";
+        if ($uuid !== '0' && empty($uuid)) $missing[] = "uuid";
+        if ($timestamp !== '0' && empty($timestamp)) $missing[] = "timestamp";
+
+        if (empty($missing)) {
             $sql = "INSERT INTO `SMS_Manager`.`message` (`uuid`, `sender`, `message_body`, `slot`, `timestamp`) "
                 . "VALUES ('" . $this->db->escape($uuid) . "', '" . $this->db->escape($sender)
                 . "', '" . $this->db->escape($body) . "', '" . $this->db->escape($slot) . "', '"
@@ -99,13 +107,6 @@ class Manager
                 return ['error' => 'DB error'];
             }
         } else {
-            $missing = [];
-            if (empty($sender)) $missing[] = "sender";
-            if (empty($body)) $missing[] = "body";
-            if (empty($slot)) $missing[] = "slot";
-            if (empty($uuid)) $missing[] = "uuid";
-            if (empty($timestamp)) $missing[] = "timestamp";
-
             return ['error' => 'incomplete data: ' . implode(",", $missing)];
         }
     }
