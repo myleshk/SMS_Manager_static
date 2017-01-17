@@ -99,7 +99,14 @@ class Manager
                 return ['error' => 'DB error'];
             }
         } else {
-            return ['error' => 'possible incomplete data'];
+            $missing = [];
+            if (empty($sender)) $missing[] = "sender";
+            if (empty($body)) $missing[] = "body";
+            if (empty($slot)) $missing[] = "slot";
+            if (empty($uuid)) $missing[] = "uuid";
+            if (empty($timestamp)) $missing[] = "timestamp";
+
+            return ['error' => 'incomplete data: ' . implode(",", $missing)];
         }
     }
 }
