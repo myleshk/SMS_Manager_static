@@ -91,4 +91,3 @@ function send_response($res, $success)
     echo json_encode($res);
     exit();
 }
-
