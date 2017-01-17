@@ -8,7 +8,7 @@ CREATE TABLE `message` (
   `sender` varchar(60) DEFAULT NULL,
   `message_body` varchar(255) DEFAULT '',
   `slot` int(1) DEFAULT NULL,
-  `timestamp` bigint(13) DEFAULT NULL,
+  `timestamp` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
