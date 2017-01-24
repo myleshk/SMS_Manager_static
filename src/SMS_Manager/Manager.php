@@ -138,8 +138,22 @@ class Manager
         } else {
             return @$result[0]['uuid'];
         }
+    }
 
 
+    public function getUserEmail($user_id)
+    {
+        if (empty($user_id)) return false;
+
+        $sql = "SELECT `email` FROM `SMS_Manager`.`auth_user` WHERE `id`='" . $this->db->escape($user_id) . "';";
+
+        $result = $this->db->query($sql);
+
+        if (empty($result)) {
+            return false;
+        } else {
+            return @$result[0]['email'];
+        }
     }
 
 

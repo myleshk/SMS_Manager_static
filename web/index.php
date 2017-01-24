@@ -86,9 +86,16 @@ $dashboard = /** @lang HTML */
     <table class="table table-bordered table-condensed table-hover">
         <tbody>
         <tr>
+            <th>当前账号</th>
+            <td><span id="email"><div class='loader'></div></span></td>
+            <td><button class="btn-block btn btn-danger" onclick="log_out()">退出登录</button></td>
+        </tr>
+        <tr>
             <th style="width: 1px;white-space: nowrap;">我的手机编号(UUID)</th>
             <td><span id="uuid"><div class='loader'></div></span>
-                <button class="btn btn-danger pull-right" data-toggle="modal" data-target="#changeDevice">更改</button>
+            </td>
+            <td>
+                <button class="btn btn-danger btn-block" data-toggle="modal" data-target="#changeDevice">更改</button>
             </td>
         </tr>
         </tbody>
@@ -128,7 +135,6 @@ $dashboard = /** @lang HTML */
                 <button type="button" class="btn btn-default" data-dismiss="modal">放弃</button>
             </div>
         </div>
-
     </div>
 </div>
 DOD;

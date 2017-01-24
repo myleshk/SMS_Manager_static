@@ -45,6 +45,16 @@ switch ($action) {
         }
         break;
 
+    case 'my_email':
+        if (!$user_id) send_response(['success' => false, 'error' => 'not logged in']);
+        $email = $MG->getUserEmail($user_id);
+        if ($email) {
+            send_response(['success' => true, 'email' => $email]);
+        } else {
+            send_response(['success' => false]);
+        }
+
+
     case 'register':
         if (isset($_POST['email']) && isset($_POST['password'])) {
             $success = $MG->register($_POST['email'], $_POST['password']);

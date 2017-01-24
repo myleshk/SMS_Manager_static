@@ -23,7 +23,31 @@ $("#changeDevice .submit").click(function () {
 $(document).ready(function () {
     reload_uuid();
     load_messages();
+    load_email();
 });
+
+function log_out() {
+    // clear cookies
+    document.cookie.split(";").forEach(function (c) {
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+    // reload
+    location.reload();
+}
+
+
+function load_email() {
+    $.post('ctrl.php', {
+        action: "my_email"
+    }, function (response) {
+        if (response['success']) {
+            var email = response['email'];
+            $("#email").text(email);
+        } else {
+            $("#email").text("获取账号错误，请新登录");
+        }
+    });
+}
 
 
 function reload_uuid() {
