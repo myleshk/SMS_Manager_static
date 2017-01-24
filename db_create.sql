@@ -18,6 +18,7 @@ CREATE TABLE `receiver_auth` (
   `uuid` varchar(60) NOT NULL DEFAULT '',
   `user_id` varchar(60) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
+  UNIQUE KEY `uuid` (`uuid`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Create syntax for TABLE 'simple_id'

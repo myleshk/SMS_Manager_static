@@ -5,15 +5,18 @@
     <title>Telxt</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
 
 <?php
+
 $login_form = /** @lang HTML */
     <<<EOL
-    <div class="form" id="login-form">
+<link rel="stylesheet" href="css/login.css">
+
+<div class="form" id="login-form">
 
     <ul class="tab-group">
         <li class="tab"><a href="#signup">注册</a></li>
@@ -77,14 +80,69 @@ $login_form = /** @lang HTML */
 </div> <!-- /form -->
 EOL;
 
+$dashboard = /** @lang HTML */
+    <<<DOD
+<div class="container">
+    <table class="table table-bordered">
+        <tbody>
+        <tr>
+            <th style="width: 1px;white-space: nowrap;">我的手机编号(UUID)</th>
+            <td><span id="uuid"><div class='loader'></div></span>
+                <button class="btn btn-danger pull-right" data-toggle="modal" data-target="#changeDevice">更改</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table class="table table-bordered" id="message-table">
+        <thead>
+        <tr>
+            <th>来自</th>
+            <th>消息内容</th>
+            <th>SIM卡编号</th>
+            <th>时间</th>
+            <td><button class="btn btn-block btn-default" onclick="return load_messages()">刷新</button></td>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<div id="changeDevice" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">更改绑定的手机设备</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="code">请输入四位绑定码</label>
+                    <input type="text" class="form-control" maxlength="4" id="code">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="submit btn btn-danger" data-dismiss="modal">提交</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">放弃</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+DOD;
+
+
 session_start();
 // check login status
 if (isset($_COOKIE['PHPSESSID']) && isset($_SESSION) && isset($_SESSION['user_id'])) {
 //    $sid = $_COOKIE['PHPSESSID'];
-
-    $_SESSION['user_id'];
+    if ($_SESSION['user_id']) {
+        $user_id = $_SESSION['user_id'];
+        echo $dashboard;
+    }
 } else {
-    var_dump($_SESSION);
     // no cookie, not logged in
     echo $login_form;
 }
@@ -95,5 +153,6 @@ if (isset($_COOKIE['PHPSESSID']) && isset($_SESSION) && isset($_SESSION['user_id
         crossorigin="anonymous"></script>
 <script src="js/ui.js"></script>
 <script src="js/login.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

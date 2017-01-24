@@ -15,9 +15,17 @@ if (isset($_POST['action'])) {
     send_response(['error' => 'No action']);
 }
 
-if(!isset($_SESSION)) session_start();
+if (!isset($_SESSION)) session_start();
 
 $MG = new SMS_Manager\Manager();
+$user_id = false;
+
+if (isset($_COOKIE['PHPSESSID']) && isset($_SESSION) && isset($_SESSION['user_id'])) {
+//    $sid = $_COOKIE['PHPSESSID'];
+    if ($_SESSION['user_id']) {
+        $user_id = $_SESSION['user_id'];
+    }
+}
 
 switch ($action) {
     case 'login':
@@ -46,6 +54,44 @@ switch ($action) {
         }
         break;
 
+    case 'validate_code':
+        if (!$user_id) send_response(['success' => false, 'error' => 'not logged in']);
+        if (isset($_POST['code'])) {
+            $code = $_POST['code'];
+            $uuid = $MG->getUUID($code);
+
+            if ($uuid) {
+                send_response(['success' => $MG->changeUserAssoc($user_id, $uuid), 'uuid' => $uuid]);
+            } else {
+                send_response(['success' => false]);
+            }
+        }
+        break;
+
+    case 'get_assoc_uuid':
+        if (!$user_id) send_response(['success' => false, 'error' => 'not logged in']);
+
+        $uuid = $MG->getAssocUUID($user_id);
+
+        if ($uuid) {
+            send_response(['success' => true, 'uuid' => $uuid]);
+        } else {
+            send_response(['success' => false]);
+        }
+        break;
+
+    case 'get_message':
+        if (!$user_id) send_response(['success' => false, 'error' => 'not logged in']);
+
+        $uuid = $MG->getAssocUUID($user_id);
+
+        if ($uuid) {
+            $messages = $MG->getMessages($uuid);
+            send_response(['success' => true, 'messages' => $messages]);
+        } else {
+            send_response(['success' => false]);
+        }
+        break;
 
 }
 

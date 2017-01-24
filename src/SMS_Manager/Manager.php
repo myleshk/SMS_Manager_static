@@ -101,7 +101,7 @@ class Manager
     {
         if (empty($simple_id)) return false;
         // check if code already exists
-        $sql = "select * from `SMS_Manager`.`simple_id` where `simple_id`='" . $this->db->escape($simple_id) . "' AND "
+        $sql = "SELECT * FROM `SMS_Manager`.`simple_id` WHERE `simple_id`='" . $this->db->escape($simple_id) . "' AND "
             . "`last_update` >= NOW() - INTERVAL 1 MINUTE;";
         $result = $this->db->query($sql);
         if (empty($result)) {
@@ -109,6 +109,37 @@ class Manager
         } else {
             return @$result[0]['uuid'];
         }
+    }
+
+
+    public function changeUserAssoc($user_id, $uuid)
+    {
+        if (empty($uuid) || empty($user_id)) return false;
+
+        $sql = "DELETE FROM `SMS_Manager`.`receiver_auth` WHERE `user_id`='" . $this->db->escape($user_id) . "';";
+
+        $this->db->delete($sql);
+        $sql = "INSERT INTO `SMS_Manager`.`receiver_auth` (`uuid`, `user_id`) VALUES ('" . $this->db->escape($uuid)
+            . "', '" . $this->db->escape($user_id) . "');";
+        return $this->db->insert($sql);
+    }
+
+
+    public function getAssocUUID($user_id)
+    {
+        if (empty($user_id)) return false;
+
+        $sql = "SELECT `uuid` FROM `SMS_Manager`.`receiver_auth` WHERE `user_id`='" . $this->db->escape($user_id) . "';";
+
+        $result = $this->db->query($sql);
+
+        if (empty($result)) {
+            return false;
+        } else {
+            return @$result[0]['uuid'];
+        }
+
+
     }
 
 
@@ -142,5 +173,16 @@ class Manager
         } else {
             return ['error' => 'incomplete data: ' . implode(",", $missing)];
         }
+    }
+
+
+    public function getMessages($uuid)
+    {
+        if (empty($uuid)) return false;
+
+        $sql = "SELECT * FROM `SMS_Manager`.`message` WHERE `uuid`='" . $this->db->escape($uuid) . "';";
+        $result = $this->db->query($sql);
+
+        return @$result;
     }
 }

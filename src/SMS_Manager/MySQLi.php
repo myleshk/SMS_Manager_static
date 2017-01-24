@@ -61,6 +61,22 @@ class MySQLi
         }
     }
 
+    public function update($sql)
+    {
+
+        if ($this->conn->query($sql) === TRUE) {
+            return $this->conn->affected_rows;
+        } else {
+            return false;
+        }
+    }
+
+    public function delete($sql)
+    {
+        return $this->update($sql);
+    }
+
+
     /**
      * @return \mysqli
      */
