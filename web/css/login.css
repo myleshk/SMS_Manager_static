@@ -124,9 +124,8 @@ label.highlight {
     height: 100%;
     padding: 5px 10px;
     background: none;
-    background-image: none;
     border: 1px solid #b39d9d;
-    color: #ffffff;
+    color: #961818;
     border-radius: 0;
     -webkit-transition: border-color .25s ease, box-shadow .25s ease;
     transition: border-color .25s ease, box-shadow .25s ease;
