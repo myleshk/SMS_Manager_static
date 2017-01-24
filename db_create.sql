@@ -16,7 +16,7 @@ CREATE TABLE `message` (
 CREATE TABLE `receiver_auth` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `uuid` varchar(60) NOT NULL DEFAULT '',
-  `receiver_id` varchar(60) NOT NULL DEFAULT '',
+  `user_id` varchar(60) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -29,4 +29,13 @@ CREATE TABLE `simple_id` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `simple_id` (`simple_id`),
   UNIQUE KEY `uuid` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Create syntax for TABLE 'auth_user'
+CREATE TABLE `auth_user` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) DEFAULT '',
+  `password` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

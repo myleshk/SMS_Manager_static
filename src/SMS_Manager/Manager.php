@@ -22,6 +22,39 @@ class Manager
         $this->conn = $this->db->getConn();
     }
 
+
+    public function login($email, $password)
+    {
+        if (empty($email) || empty($password)) return false;
+
+        $sql = "SELECT `id` FROM `SMS_Manager`.`auth_user` WHERE `email`='" . $this->db->escape($email) . "' AND `password`='" .
+            $this->db->escape(self::hash_256($password)) . "';";
+
+
+        $result = $this->db->query($sql);
+        if (empty($result)) {
+            // not exist
+            return false;
+        } else {
+            return @$result[0]['id'];
+        }
+    }
+
+    public function register($email, $password)
+    {
+        if (empty($email) || empty($password)) return false;
+
+        $sql = "INSERT INTO `SMS_Manager`.`auth_user` (`email`,`password`) VALUES ('"
+            . $this->db->escape($email) . "', '" . $this->db->escape(self::hash_256($password)) . "');";
+
+        return $this->db->insert($sql) ? true : false;
+    }
+
+    public static function hash_256($string)
+    {
+        return hash('sha256', $string, false);
+    }
+
     public function getSimpleID($uuid)
     {
         if (empty($uuid)) return false;
