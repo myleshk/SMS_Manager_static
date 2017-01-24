@@ -1,3 +1,4 @@
 *.log
+*.apk
 vendor/
 .idea/

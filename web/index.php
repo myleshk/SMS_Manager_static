@@ -9,7 +9,15 @@
 </head>
 
 <body>
-
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a href="./sms_manager.apk" target="_blank" class="navbar-brand pull-right">
+                <img src="img/ic_android_black_48dp_1x.png" title="下载APP" alt="下载APP" id="download-app">
+            </a>
+        </div>
+    </div>
+</nav>
 <?php
 
 $login_form = /** @lang HTML */
