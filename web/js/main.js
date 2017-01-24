@@ -33,6 +33,7 @@ function reload_uuid() {
         if (response['success']) {
             var uuid = response['uuid'];
             $("#uuid").text(uuid);
+            load_messages();
         } else {
             $("#uuid").text("绑定码错误，请重试");
         }

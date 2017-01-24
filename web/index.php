@@ -28,7 +28,7 @@ $login_form = /** @lang HTML */
     </div>
 
     <div class="panel hidden panel-success" id="activate-info">
-        <div class="panel-heading">Your account is created! Please check your email to activate.</div>
+        <div class="panel-heading">注册成功！请登录</div>
     </div>
 
     <div class="tab-content">

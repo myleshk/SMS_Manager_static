@@ -43,6 +43,7 @@ function register(form) {
                 warn(response['error']);
             } else if (response['success']) {
                 $("#activate-info").removeClass("hidden");
+                warn(false);
                 return;
             } else {
                 warn("您已经注册，请登录");
@@ -56,7 +57,11 @@ function register(form) {
 }
 
 function warn(str) {
-    $('#warning').removeClass("hidden").find(".panel-heading").text(str);
+    if (str) {
+        $('#warning').removeClass("hidden").find(".panel-heading").text(str);
+    } else {
+        $('#warning').addClass("hidden");
+    }
 }
 
 function findPassword(elem) {
@@ -85,5 +90,6 @@ $(document).ready(function () {
     $("input").on('change input', function () {
         $('#warning').addClass("hidden");
         $("#login-form button").prop("disabled", false);
+        $("#activate-info").addClass("hidden");
     });
 });
