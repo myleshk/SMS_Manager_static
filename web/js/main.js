@@ -57,7 +57,7 @@ function load_messages() {
                 var body = this['message_body'];
                 var slot = parseInt(this['slot']);
                 var time = timestampToString(this['timestamp']);
-                tbody.append("<tr><td>" + sender + "</td><td>" + body + "</td><td>" + slot + "</td><td colspan='2'>" + time + "</td></tr>")
+                tbody.prepend("<tr><td>" + sender + "</td><td>" + body + "</td><td>" + slot + "</td><td colspan='2'>" + time + "</td></tr>")
             });
 
         } else {
