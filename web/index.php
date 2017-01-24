@@ -83,7 +83,7 @@ EOL;
 $dashboard = /** @lang HTML */
     <<<DOD
 <div class="container">
-    <table class="table table-bordered">
+    <table class="table table-bordered table-condensed table-hover">
         <tbody>
         <tr>
             <th style="width: 1px;white-space: nowrap;">我的手机编号(UUID)</th>
