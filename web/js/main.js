@@ -66,6 +66,7 @@ function reload_uuid() {
 
 
 function load_messages() {
+    var $last_update = $("#last-update");
     $.post('ctrl.php', {
         action: "get_message"
     }, function (response) {
@@ -81,18 +82,19 @@ function load_messages() {
                 var body = this['message_body'];
                 var slot = parseInt(this['slot']);
                 var time = timestampToString(this['timestamp']);
-                tbody.prepend("<tr><td>" + sender + "</td><td>" + body + "</td><td>" + slot + "</td><td colspan='2'>" + time + "</td></tr>")
+                tbody.prepend("<tr><td>" + sender + "</td><td>" + body + "</td><td>" + slot + "</td><td>" + time + "</td></tr>")
             });
 
+            $last_update.text(timestampToString(new Date().valueOf() / 1000));
         } else {
+            $last_update.text(timestampToString(new Date().valueOf() / 1000) + " (失败）");
         }
-
     });
 }
 
 function timestampToString(ts) {
     var d = new Date(ts * 1000);
     return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
-        + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
-
+        + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":"
+        + ("0" + d.getSeconds()).slice(-2);
 }

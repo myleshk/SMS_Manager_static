@@ -96,14 +96,22 @@ $dashboard = /** @lang HTML */
         <tr>
             <th>当前账号</th>
             <td><span id="email"><div class='loader'></div></span></td>
-            <td><button class="btn-block btn btn-danger" onclick="log_out()">退出登录</button></td>
+            <td class="button-container"><button class="btn-block btn btn-danger" onclick="log_out()">退出登录</button></td>
         </tr>
         <tr>
-            <th style="width: 1px;white-space: nowrap;">我的手机编号(UUID)</th>
+            <th style="width: 1px;white-space: nowrap;">绑定手机(UUID)</th>
             <td><span id="uuid"><div class='loader'></div></span>
             </td>
-            <td>
-                <button class="btn btn-danger btn-block" data-toggle="modal" data-target="#changeDevice">更改</button>
+            <td class="button-container">
+                <button class="btn btn-default btn-block" data-toggle="modal" data-target="#changeDevice">更改</button>
+            </td>
+        </tr>
+        <tr>
+            <th style="width: 1px;white-space: nowrap;">上次刷新</th>
+            <td><span id="last-update"><div class='loader'></div></span>
+            </td>
+            <td class="button-container">
+                <button class="btn btn-block btn-default" onclick="return load_messages()">刷新</button>
             </td>
         </tr>
         </tbody>
@@ -115,7 +123,6 @@ $dashboard = /** @lang HTML */
             <th>消息内容</th>
             <th>SIM卡编号</th>
             <th>时间</th>
-            <td><button class="btn btn-block btn-default" onclick="return load_messages()">刷新</button></td>
         </tr>
         </thead>
         <tbody>
