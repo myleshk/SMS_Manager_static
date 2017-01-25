@@ -66,7 +66,6 @@ function reload_uuid() {
 
 
 function load_messages() {
-    var $last_update = $("#last-update");
     $.post('ctrl.php', {
         action: "get_message"
     }, function (response) {
@@ -85,11 +84,14 @@ function load_messages() {
                 tbody.prepend("<tr><td>" + sender + "</td><td>" + body + "</td><td>" + slot + "</td><td>" + time + "</td></tr>")
             });
 
-            $last_update.text(timestampToString(new Date().valueOf() / 1000));
+            updateLastTime(true);
         } else {
-            $last_update.text(timestampToString(new Date().valueOf() / 1000) + " (失败）");
+            updateLastTime();
         }
-    });
+    })
+        .fail(function () {
+            updateLastTime();
+        });
 }
 
 function timestampToString(ts) {
@@ -97,4 +99,10 @@ function timestampToString(ts) {
     return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
         + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":"
         + ("0" + d.getSeconds()).slice(-2);
+}
+
+function updateLastTime(success) {
+    var extra_status = "";
+    if (!success) extra_status = " （失败）";
+    $("#last-update").text(timestampToString(new Date().valueOf() / 1000) + extra_status);
 }
