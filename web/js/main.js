@@ -10,6 +10,7 @@ var config = {
 var error_code_dict;
 wilddog.initializeApp(config);
 
+// load default error_code list
 wilddog.sync().ref('error_code').once("value").then(function (snapshot) {
     error_code_dict = snapshot.val();
 }).catch(function (err) {
@@ -26,7 +27,12 @@ var main_app = new Vue({
         error: false,
         error_text: "",
         info: false,
-        info_text: ""
+        info_text: "",
+        uuid: "",
+        uuids: ["None"],
+        last_update: "",
+        messages: [],
+        previous_uuid: ""
     },
     computed: {
         login_active: function () {
@@ -38,6 +44,11 @@ var main_app = new Vue({
             return {
                 active: this.view == "register"
             }
+        },
+        sorted_messages: function () {
+            return this.messages.sort(function (a, b) {
+                return b.timestamp - a.timestamp;
+            });
         }
     },
     methods: {
@@ -68,6 +79,14 @@ var main_app = new Vue({
         resetPassword: function () {
             hidePrompt();
             resetPassword(this.email);
+        },
+        timestampToString: function (ts) {
+            return timestampToString(ts);
+        }
+    },
+    watch: {
+        uuid: function (val) {
+            displayMessages(val);
         }
     }
 });
@@ -78,8 +97,14 @@ wilddog.auth().onAuthStateChanged(function (user) {
     currentUser = wilddog.auth().currentUser;
     if (currentUser) {
         if (currentUser.emailVerified) {
+            // login success
             main_app.logged_in = 1;
+            main_app.email = currentUser.email;
+
+            getUuids();
+            displayMessages();
         } else {
+            // need email verification
             main_app.logged_in = 0;
             sendEmailVerification(currentUser);
             showError(null, "您的账号未激活，我们刚刚发送了确认邮件，请验证邮箱后重试登录");
@@ -89,13 +114,13 @@ wilddog.auth().onAuthStateChanged(function (user) {
         main_app.logged_in = 0;
     }
     console.info("currentUser", currentUser);
+    // we always clean sensitive data
+    main_app.pswd = "";
 });
 
-var message_ref = wilddog.sync().ref('message');
-message_ref.on("value", function (snapshot) {
-    console.log(snapshot.val());
-});
-
+/***
+ * functions
+ */
 
 function login(email, pswd) {
 //        main_app.logged_in = -1;// loading
@@ -113,6 +138,15 @@ function logout() {
     wilddog.auth().signOut().then(function () {
         console.info("user sign out.");
     });
+
+    // clean previous user data
+    main_app.email = "";
+    main_app.uuid = "";
+    main_app.uuids = ["None"];
+    main_app.messages = [];
+    main_app.previous_uuid = "";
+    // reload page to be safe
+    location.reload();
 }
 
 function register(email, pswd) {
@@ -167,6 +201,40 @@ function sendEmailVerification(user) {
         });
 }
 
+function getUuids() {
+    // get uuids
+    wilddog.sync().ref('user/' + currentUser.uid).on("value", function (snapshot) {
+        if (snapshot.val()) {
+            main_app.uuids = snapshot.val().uuid;
+            if (main_app.uuids.length > 0) {
+                main_app.uuid = main_app.uuids[0];
+            } else {
+                main_app.uuid = "";
+            }
+        }
+    });
+}
+
+function displayMessages(uuid) {
+    if (!uuid) return false;
+    if (main_app.previous_uuid) {
+        // unbind old listener
+        wilddog.sync().ref('message').child(main_app.previous_uuid).off();
+    }
+    wilddog.sync().ref('message').child(uuid).on("value", function (snapshot) {
+        main_app.messages = snapshot.val();
+        console.log(main_app.messages);
+        main_app.last_update = timestampToString(new Date().valueOf() / 1000);
+    });
+    main_app.previous_uuid = uuid;
+}
+
+function timestampToString(ts) {
+    var d = new Date(ts * 1000);
+    return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
+        + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":"
+        + ("0" + d.getSeconds()).slice(-2);
+}
 /**********************************************************************
  * OLD
  ***********************************************************************/
@@ -239,15 +307,4 @@ function load_messages() {
         });
 }
 
-function timestampToString(ts) {
-    var d = new Date(ts * 1000);
-    return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2)
-        + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":"
-        + ("0" + d.getSeconds()).slice(-2);
-}
-
-function updateLastTime(success) {
-    var extra_status = "";
-    if (!success) extra_status = " （失败）";
-    $("#last-update").text(timestampToString(new Date().valueOf() / 1000) + extra_status);
-}
+// TODO: finish add/change phone logic

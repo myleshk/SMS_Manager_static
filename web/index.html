@@ -92,26 +92,25 @@
         <tbody>
         <tr>
             <th>当前账号</th>
-            <td><span id="email"><div class='loader'></div></span></td>
+            <td>{{ email }}</td>
             <td class="button-container">
                 <button class="btn-block btn btn-danger" v-on:click="logout">退出登录</button>
             </td>
         </tr>
         <tr>
             <th style="width: 1px;white-space: nowrap;">绑定手机(UUID)</th>
-            <td><span id="uuid"><div class='loader'></div></span>
+            <td>
+                <select class="form-control" v-model="uuid">
+                    <option v-for="uuid in uuids" v-bind:value="uuid">{{ uuid }}</option>
+                </select>
             </td>
             <td class="button-container">
                 <button class="btn btn-default btn-block" data-toggle="modal" data-target="#changeDevice">更改</button>
             </td>
         </tr>
         <tr>
-            <th style="width: 1px;white-space: nowrap;">上次刷新</th>
-            <td><span id="last-update"><div class='loader'></div></span>
-            </td>
-            <td class="button-container">
-                <button class="btn btn-block btn-default" onclick="return load_messages()">刷新</button>
-            </td>
+            <th>数据更新时间</th>
+            <td colspan="2">{{ last_update }}</td>
         </tr>
         </tbody>
     </table>
@@ -120,11 +119,17 @@
         <tr>
             <th>来自</th>
             <th>消息内容</th>
-            <th>SIM卡编号</th>
+            <th>卡槽</th>
             <th>时间</th>
         </tr>
         </thead>
         <tbody>
+        <tr v-for="message in sorted_messages">
+            <td>{{ message.sender }}</td>
+            <td class="wrap">{{ message.message_body }}</td>
+            <td>{{ message.slot }}</td>
+            <td>{{ timestampToString(message.timestamp) }}</td>
+        </tr>
         </tbody>
     </table>
 

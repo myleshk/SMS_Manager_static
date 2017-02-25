@@ -50,3 +50,11 @@ img#download-app {
 .button-container {
     width: 100px;
 }
+
+#message-table td, #message-table th {
+    white-space: nowrap;
+}
+
+#message-table tbody td.wrap {
+    white-space: pre-line;
+}
