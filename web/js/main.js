@@ -29,10 +29,13 @@ var main_app = new Vue({
         info: false,
         info_text: "",
         uuid: "",
-        uuids: ["None"],
+        uuids: [],
         last_update: "",
         messages: [],
-        previous_uuid: ""
+        previous_uuid: "",
+        pairing_editing: false,
+        pairing_verifying: false,
+        pairing_code: ""
     },
     computed: {
         login_active: function () {
@@ -49,6 +52,9 @@ var main_app = new Vue({
             return this.messages.sort(function (a, b) {
                 return b.timestamp - a.timestamp;
             });
+        },
+        has_uuids: function () {
+            return Object.keys(this.uuids).length > 0;
         }
     },
     methods: {
@@ -82,6 +88,13 @@ var main_app = new Vue({
         },
         timestampToString: function (ts) {
             return timestampToString(ts);
+        },
+        editPairing: function () {
+            this.pairing_editing = !this.pairing_editing;
+            hidePrompt();
+        },
+        verifyCode: function () {
+            verifyCode();
         }
     },
     watch: {
@@ -142,9 +155,10 @@ function logout() {
     // clean previous user data
     main_app.email = "";
     main_app.uuid = "";
-    main_app.uuids = ["None"];
+    main_app.uuids = [];
     main_app.messages = [];
     main_app.previous_uuid = "";
+    main_app.pairing_code = "";
     // reload page to be safe
     location.reload();
 }
@@ -206,13 +220,13 @@ function getUuids() {
     wilddog.sync().ref('user/' + currentUser.uid).on("value", function (snapshot) {
         if (snapshot.val()) {
             main_app.uuids = snapshot.val().uuid;
-            if (main_app.uuids.length > 0) {
-                main_app.uuid = main_app.uuids[0];
-            } else {
-                main_app.uuid = "";
+            var uuids = main_app.uuids;
+            if (Object.keys(uuids).length > 0) {
+                main_app.uuid = uuids[Object.keys(uuids)[0]];
             }
         }
     });
+    main_app.uuid = "";
 }
 
 function displayMessages(uuid) {
@@ -235,6 +249,38 @@ function timestampToString(ts) {
         + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ":"
         + ("0" + d.getSeconds()).slice(-2);
 }
+
+function verifyCode() {
+    hidePrompt();
+    var code = main_app.pairing_code;
+    if (!code) return showError(null, "请输入验证码");
+    main_app.pairing_verifying = true;
+    console.log(code);
+
+    wilddog.sync().ref('pairing_code').child(code).once("value").then(function (snapshot) {
+        var values = snapshot.val();
+        main_app.pairing_verifying = false;
+        // check expire
+        if (values && values.expire && new Date().valueOf() / 1000 < values.expire) {
+            // check good
+            if (values.uuid) {
+                // add uuid to user record
+                wilddog.sync().ref('user').child(currentUser.uid).child("uuid").push(values.uuid);
+            }
+
+        } else {
+            showError(null, "绑定码错误或已过期，请在手机上重新获取");
+        }
+        // clear code
+        main_app.pairing_code = "";
+    }).catch(function (err) {
+        showError(err.code, err.message);
+        console.error(err);
+        main_app.pairing_verifying = false;
+    });
+}
+
+//TODO: pairing_code
 /**********************************************************************
  * OLD
  ***********************************************************************/
@@ -307,4 +353,4 @@ function load_messages() {
         });
 }
 
-// TODO: finish add/change phone logic
+// TODO: finish add/change phone logic -- remove phone

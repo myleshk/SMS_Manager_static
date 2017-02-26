@@ -100,12 +100,13 @@
         <tr>
             <th style="width: 1px;white-space: nowrap;">绑定手机(UUID)</th>
             <td>
-                <select class="form-control" v-model="uuid">
+                <span v-if="!has_uuids">请选择或添加绑定手机</span>
+                <select class="form-control" v-model="uuid" v-if="has_uuids">
                     <option v-for="uuid in uuids" v-bind:value="uuid">{{ uuid }}</option>
                 </select>
             </td>
             <td class="button-container">
-                <button class="btn btn-default btn-block" data-toggle="modal" data-target="#changeDevice">更改</button>
+                <button class="btn btn-default btn-block" v-on:click="editPairing">更改</button>
             </td>
         </tr>
         <tr>
@@ -133,24 +134,46 @@
         </tbody>
     </table>
 
-    <div id="changeDevice" class="modal fade" role="dialog">
+    <!--Edit pairing-->
+    <div class="modal" style="display: block;" v-if="pairing_editing" role="dialog">
         <div class="modal-dialog">
 
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close" v-on:click="editPairing">&times;</button>
                     <h4 class="modal-title">更改绑定的手机设备</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label for="code">请输入四位绑定码</label>
-                        <input type="text" class="form-control" maxlength="4" id="code">
+                    <div v-if="error" class="panel panel-danger">
+                        <div class="panel-heading">{{ error_text }}</div>
                     </div>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th colspan="4">设备列表</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="uuid in uuids">
+                            <td></td>
+                            <td colspan="2">{{ uuid }}</td>
+                        </tr>
+                        <tr v-if="!pairing_verifying">
+                            <td>添加设备</td>
+                            <td>
+                                <input placeholder="请输入四位绑定码" type="text" class="form-control" maxlength="4"
+                                       v-model="pairing_code">
+                            </td>
+                            <td style="width: 1px;">
+                                <button type="button" class="submit btn btn-link" v-on:click="verifyCode">验证并添加</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="submit btn btn-danger" data-dismiss="modal">提交</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">放弃</button>
+                    <div v-if="pairing_verifying" class="loader"></div>
                 </div>
             </div>
         </div>
