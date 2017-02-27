@@ -125,7 +125,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="message in sorted_messages">
+        <tr v-for="message in messages">
             <td>{{ message.sender }}</td>
             <td class="wrap">{{ message.message_body }}</td>
             <td>{{ message.slot }}</td>
@@ -183,8 +183,8 @@
         <div class="loader"></div>
     </div>
 </div>
-<script src="https://unpkg.com/vue@2.1.10/dist/vue.js"></script>
 <script src="https://cdn.wilddog.com/sdk/js/2.5.2/wilddog.js"></script>
+<script src="https://unpkg.com/vue@2.1.10/dist/vue.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

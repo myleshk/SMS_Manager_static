@@ -48,11 +48,6 @@ var main_app = new Vue({
                 active: this.view == "register"
             }
         },
-        sorted_messages: function () {
-            return this.messages.sort(function (a, b) {
-                return b.timestamp - a.timestamp;
-            });
-        },
         has_uuids: function () {
             return Object.keys(this.uuids).length > 0;
         }
@@ -233,11 +228,24 @@ function displayMessages(uuid) {
     if (!uuid) return false;
     if (main_app.previous_uuid) {
         // unbind old listener
-        wilddog.sync().ref('message').child(main_app.previous_uuid).off();
+        wilddog.sync().ref('message/' + main_app.previous_uuid).off();
     }
-    wilddog.sync().ref('message').child(uuid).on("value", function (snapshot) {
-        main_app.messages = snapshot.val();
-        console.log(main_app.messages);
+    wilddog.sync().ref('message/' + uuid).on("value", function (snapshot) {
+        var messages = snapshot.val();
+        messages = Object.keys(messages).map(function (key) {
+            return messages[key];
+        });
+
+        main_app.messages = messages.sort(function (a, b) {
+            if (a.timestamp < b.timestamp) {
+                return 1;
+            }
+            if (a.timestamp > b.timestamp) {
+                return -1;
+            }
+            return 0;
+        });
+
         main_app.last_update = timestampToString(new Date().valueOf() / 1000);
     });
     main_app.previous_uuid = uuid;
@@ -278,79 +286,6 @@ function verifyCode() {
         console.error(err);
         main_app.pairing_verifying = false;
     });
-}
-
-//TODO: pairing_code
-/**********************************************************************
- * OLD
- ***********************************************************************/
-/*$("#changeDevice .submit").click(function () {
- var code = $("input#code").val();
-
- if (code) {
- $.post('ctrl.php', {
- action: 'validate_code',
- code: code
- }, function (response) {
- if (response['success']) {
- var uuid = response['uuid'];
- reload_uuid();
- } else {
- $("#uuid").text("绑定码错误，请重试");
- }
- });
- $("input#code").val('');
- }
- });
-
- $(document).ready(function () {
- reload_uuid();
- load_messages();
- load_email();
- });*/
-
-function reload_uuid() {
-    $.post('ctrl.php', {
-        action: "get_assoc_uuid"
-    }, function (response) {
-        if (response['success']) {
-            var uuid = response['uuid'];
-            $("#uuid").text(uuid);
-            load_messages();
-        } else {
-            $("#uuid").text("绑定码错误，请重试");
-        }
-    });
-}
-
-
-function load_messages() {
-    $.post('ctrl.php', {
-        action: "get_message"
-    }, function (response) {
-        if (response['success']) {
-            var messages = response['messages'];
-            // load to table
-            var tbody = $("#message-table tbody");
-            //clear table
-            tbody.empty();
-            $.each(messages, function () {
-                var uuid = this['uuid'];
-                var sender = this['sender'];
-                var body = this['message_body'];
-                var slot = parseInt(this['slot']);
-                var time = timestampToString(this['timestamp']);
-                tbody.prepend("<tr><td>" + sender + "</td><td>" + body + "</td><td>" + slot + "</td><td>" + time + "</td></tr>")
-            });
-
-            updateLastTime(true);
-        } else {
-            updateLastTime();
-        }
-    })
-        .fail(function () {
-            updateLastTime();
-        });
 }
 
 // TODO: finish add/change phone logic -- remove phone
