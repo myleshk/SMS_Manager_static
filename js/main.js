@@ -115,8 +115,8 @@ wilddog.auth().onAuthStateChanged(function (user) {
             // need email verification
             main_app.logged_in = 0;
             sendEmailVerification(currentUser);
-            showError(null, "您的账号未激活，我们刚刚发送了确认邮件，请验证邮箱后重试登录");
-            logout();
+            showError(null, "您的账号未激活，我们刚刚发送了确认邮件，请验证邮箱后再登录");
+            logout(true);
         }
     } else {
         main_app.logged_in = 0;
@@ -142,7 +142,7 @@ function login(email, pswd) {
     });
 }
 
-function logout() {
+function logout(no_reload) {
     wilddog.auth().signOut().then(function () {
         console.info("user sign out.");
     });
@@ -154,7 +154,9 @@ function logout() {
     main_app.messages = [];
     main_app.previous_uuid = "";
     main_app.pairing_code = "";
+    main_app.view = "login";
     // reload page to be safe
+    if(no_reload) return;
     location.reload();
 }
 
